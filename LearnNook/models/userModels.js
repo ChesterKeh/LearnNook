@@ -1,28 +1,32 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-const { schema, model } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
-const userSchema = new Schema({
-  name: {
-    type: string,
-  },
-  email: {
-    type: string,
-  },
-  password: {
-    type: String,
-    trim: true,
-    minLength: 3,
-    required: true,
-  },
-  timestampss: true,
-  toJSON: {
-    transform: function (doc, ret) {
-      delete ret.password;
-      return ret;
+const userSchema = new Schema(
+  {
+    name: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
+    password: {
+      type: String,
+      trim: true,
+      minLength: 3,
+      required: true,
     },
   },
-});
+  {
+    timestamps: true,
+    toJSON: {
+      transform: function (_doc, ret) {
+        delete ret.password;
+        return ret;
+      },
+    },
+  }
+);
 
 const SALT_ROUNDS = 10;
 

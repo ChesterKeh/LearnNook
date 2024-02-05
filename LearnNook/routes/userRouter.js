@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.router();
+const router = express.Router(); // Fix: Change express.router() to express.Router()
 const userController = require("../controllers/userController");
 
 router.get("/", userController.getAll);
