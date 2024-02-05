@@ -35,3 +35,8 @@ export async function getUser(userId) {
   const response = await usersAPI.getUser(userId);
   return response;
 }
+
+export async function login(loginData) {
+  const response = await usersAPI.login(loginData);
+  return response;
+}
