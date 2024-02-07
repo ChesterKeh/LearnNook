@@ -10,16 +10,14 @@ export async function signUp(userData) {
   });
   console.log("Response from backend:", res);
   if (res.ok) {
-    // Extract the token from the response headers or body
-    const token = res.headers.get("Authorization"); // Assuming token is sent in the Authorization header
-    // const { token } = await res.json(); // Uncomment if token is sent in the response body
-    console.log("Token:", token);
-    return token;
+    console.log("Return JSON");
+    return res.json();
   } else {
-    console.log("Error in signup");
+    console.log("Error in signup", res);
     throw new Error("Invalid Sign Up");
   }
-  
+}
+
 export async function getUser(userId) {
   const res = await fetch(BASE_URL + "/user", {
     method: "POST",

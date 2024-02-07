@@ -35,5 +35,6 @@ export async function getUser(userId) {
 
 export async function login(loginData) {
   const response = await usersAPI.login(loginData);
+  localStorage.setItem("token", response.token);
   return response;
 }

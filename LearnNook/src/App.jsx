@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import Homepage from "./pages/HomePage";
+import Homepage from "./pages/MainPage/HomePage";
 
 function App() {
   const [count, setCount] = useState(0);
