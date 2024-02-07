@@ -1,6 +1,7 @@
 const User = require("../models/userModels");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const gravatar = require("gravatar");
 
 const getAll = async (req, res) => {
   try {
@@ -19,8 +20,7 @@ function createJWT(user) {
     { expiresIn: "24h" }
   );
 }
-
-const create = async (req, res) => {
+const register = async (req, res) => {
   const data = req.body;
 
   try {
@@ -29,12 +29,20 @@ const create = async (req, res) => {
       return res.status(400).json({ error: "Email already in use" });
     }
 
-    if (data.password.trim().length < 3) {
-      const error = { msg: "Server password too short" };
-      return res.status(400).json(error);
-    }
+    const avatar = gravatar.url(data.email, {
+      s: "200",
+      r: "pg",
+      d: "mm",
+    });
 
-    const user = await User.create(data);
+    const newUser = new User({
+      name: data.name,
+      email: data.email,
+      avatar,
+      password: data.password,
+    });
+
+    const user = await newUser.save();
     const token = createJWT(user);
 
     res.status(201).json({ token, user });
@@ -51,21 +59,21 @@ const create = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const somebody = await User.findOne({ email });
+    const foundUser = await User.findOne({ email });
 
-    if (somebody === null) {
-      res.status(401).json({ msg: "user not found" });
+    if (foundUser === null) {
+      res.status(401).json({ msg: "User not found" });
       return;
     }
 
-    const check = await bcrypt.compare(password, somebody.password);
+    const check = await bcrypt.compare(password, foundUser.password);
     if (!check) {
-      res.status(401).json({ msg: "wrong password" });
+      res.status(401).json({ msg: "Wrong password" });
       return;
     }
 
-    const token = createJWT(somebody);
-    res.json({ token, somebody });
+    const token = createJWT(foundUser);
+    res.json({ token, foundUser });
   } catch (error) {
     res.status(500).json({ error });
   }
@@ -84,7 +92,7 @@ const getUser = async (req, res) => {
 
 module.exports = {
   getAll,
-  create,
+  register,
   login,
   getUser,
 };

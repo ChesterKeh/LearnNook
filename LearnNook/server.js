@@ -12,7 +12,7 @@ server.use(express.json());
 server.use(express.static(path.join(__dirname, "dist")));
 
 //middleware block
-server.post("api/users", userRouter);
+server.use("/api/users", userRouter);
 
 server.get("/test", (req, res) => {
   res.json({ hello: "world" });

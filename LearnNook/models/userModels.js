@@ -6,9 +6,11 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
+      require: true,
     },
     email: {
       type: String,
+      require: true,
     },
     password: {
       type: String,
@@ -16,7 +18,15 @@ const userSchema = new Schema(
       minLength: 3,
       required: true,
     },
+    avatar: {
+      type: String,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
+    },
   },
+
   {
     timestamps: true,
     toJSON: {
