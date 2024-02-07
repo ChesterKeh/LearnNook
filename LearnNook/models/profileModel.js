@@ -56,3 +56,5 @@ const profileSchema = new Schema({
     },
   ],
 });
+
+module.exports = model("Profile", profileSchema);

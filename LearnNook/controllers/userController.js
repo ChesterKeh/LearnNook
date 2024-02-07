@@ -21,37 +21,30 @@ function createJWT(user) {
   );
 }
 const register = async (req, res) => {
-  const data = req.body;
+  const { name, email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email: data.email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: "Email already in use" });
     }
 
-    const avatar = gravatar.url(data.email, {
+    const avatar = gravatar.url(email, {
       s: "200",
       r: "pg",
       d: "mm",
     });
 
-    const newUser = new User({
-      name: data.name,
-      email: data.email,
-      avatar,
-      password: data.password,
-    });
-
-    const user = await newUser.save();
+    const user = await User.create({ name, email, password, avatar });
     const token = createJWT(user);
 
-    res.status(201).json({ token, user });
+    res.status(201).json({ token });
   } catch (error) {
     if (error.code === 11000 || error.code === 11001) {
       return res.status(400).json({ error: "Email already in use" });
     }
 
-    console.error(error);
+    console.error("Registration Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
