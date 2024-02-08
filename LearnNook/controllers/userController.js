@@ -20,6 +20,7 @@ function createJWT(user) {
     { expiresIn: "24h" }
   );
 }
+
 const register = async (req, res) => {
   const { name, email, password } = req.body;
 
