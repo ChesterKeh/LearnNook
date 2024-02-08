@@ -8,50 +8,48 @@ const authenticateProfile = async (req, res, next) => {
     const user = decoded.user;
 
     const userId = user._id;
-    const profile = await Profile.findOne({ user: userId });
+    let profile = await Profile.findOne({ user: userId });
+
     if (!profile) {
-      return res.status(404).json({ error: "User Not found" });
+      const {
+        handle,
+        company,
+        website,
+        location,
+        status,
+        skills,
+        bio,
+        experience,
+      } = req.body;
+
+      const existingProfile = await Profile.findOne({ handle });
+      if (existingProfile) {
+        return res
+          .status(400)
+          .json({ error: "Handle already exists. Try another one." });
+      }
+
+      const profileFields = {
+        user: userId,
+        handle,
+        company,
+        website,
+        location,
+        status,
+        skills: skills.split(",").map((skill) => skill.trim()),
+        bio,
+        experience,
+      };
+
+      profile = new Profile(profileFields);
+      await profile.save();
     }
-    req.profile;
+
+    req.profile = profile;
+    res.status(200).json({ profile });
     next();
   } catch (error) {
     return res.status(401).json({ error: "Invalid token" });
-  }
-};
-
-const createProfile = async (req, res) => {
-  try {
-    const {
-      handle,
-      company,
-      website,
-      location,
-      status,
-      skills,
-      bio,
-      experience,
-    } = req.body;
-
-    const profileFields = {
-      user: req.user.id,
-      handle,
-      company,
-      website,
-      location,
-      status,
-      skills: skills.split(",").map((skill) => skill.trim()),
-      bio,
-      experience,
-    };
-
-    const profile = new Profile(profileFields);
-    await profile.save();
-    res
-      .status(201)
-      .json({ success: true, message: "Profile created", profile });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ success: false, error: "Server error" });
   }
 };
 
@@ -138,7 +136,6 @@ const deleteProfileById = async (req, res) => {
 };
 
 module.exports = {
-  createProfile,
   authenticateProfile,
   getAllProfiles,
   getProfileById,
