@@ -4,6 +4,7 @@ import Homepage from "./pages/MainPage/HomePage";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import AuthPage from "./pages/AuthPage/AuthPage";
 import Navbar from "./components/NavBar/NavBar";
+import ProfileListPage from "./pages/ProfileListPage/ProfileListPage";
 
 import "./App.css";
 
@@ -16,6 +17,10 @@ function App() {
         <Route
           path="*"
           element={<Homepage />}
+        />
+        <Route
+          path="/list"
+          element={<ProfileListPage />}
         />
         <Route
           path="/signup"
