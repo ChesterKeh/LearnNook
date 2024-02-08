@@ -1,13 +1,31 @@
-import { useState } from "react";
-import "./App.css";
+import { Route, Routes } from "react-router-dom";
+import React from "react";
 import Homepage from "./pages/MainPage/HomePage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import AuthPage from "./pages/AuthPage/AuthPage";
+import Navbar from "./components/NavBar/NavBar";
+
+import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
-      <Homepage />
+      <Navbar />
+
+      <Routes>
+        <Route
+          path="*"
+          element={<Homepage />}
+        />
+        <Route
+          path="/signup"
+          element={<AuthPage />}
+        />
+        <Route
+          path="/profile"
+          element={<ProfilePage />}
+        />
+      </Routes>
     </>
   );
 }
