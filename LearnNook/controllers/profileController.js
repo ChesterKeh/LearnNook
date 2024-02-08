@@ -1,37 +1,37 @@
 const Profile = require("../models/profileModel");
 const jwt = require("jsonwebtoken");
 
-const getAll = async (req, res) => {
-  try {
-    const profiles = await Profile.find();
-    res.status(200).json({ profiles });
-  } catch (error) {
-    res.status(500).json({ profiles });
-  }
-};
-
-const authenticateUser = async (req, res, next) => {
+const authenticateProfile = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
     const decoded = jwt.verify(token, process.env.SECRET);
-    const userId = decoded.userId;
+    const user = decoded.user;
+
+    const userId = user._id;
     const profile = await Profile.findOne({ user: userId });
     if (!profile) {
-      // If no profile exists, proceed to updateProfile to create a new profile
-      return next();
+      return res.status(404).json({ error: "User Not found" });
     }
-    req.profile = profile;
+    req.profile;
     next();
   } catch (error) {
-    console.error("Database Error:", error);
-    res.status(500).json({ error });
+    return res.status(401).json({ error: "Invalid token" });
   }
 };
 
-const updateProfile = async (req, res) => {
+const createProfile = async (req, res) => {
   try {
-    const { handle, company, website, location, status, bio, skills } =
-      req.body;
+    const {
+      handle,
+      company,
+      website,
+      location,
+      status,
+      skills,
+      bio,
+      experience,
+    } = req.body;
+
     const profileFields = {
       user: req.user.id,
       handle,
@@ -39,27 +39,80 @@ const updateProfile = async (req, res) => {
       website,
       location,
       status,
+      skills: skills.split(",").map((skill) => skill.trim()),
       bio,
-      skills: typeof skills !== "undefined" ? skills.split(",") : undefined,
+      experience,
     };
 
-    let profile = req.profile; // Get profile from request object
+    const profile = new Profile(profileFields);
+    await profile.save();
+    res
+      .status(201)
+      .json({ success: true, message: "Profile created", profile });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};
 
+// Controller function to get all profiles
+const getAllProfiles = async (req, res) => {
+  try {
+    const profiles = await Profile.find();
+    res.status(200).json({ profiles });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};
+
+// Controller function to get a single profile by ID
+const getProfileById = async (req, res) => {
+  try {
+    const profile = await Profile.findById(req.params.id);
     if (!profile) {
-      // If no profile exists, create a new profile
-      profile = new Profile(profileFields);
-      await profile.save();
-      return res
-        .status(201)
-        .json({ success: true, message: "New profile created", profile });
+      return res.status(404).json({ error: "Profile not found" });
     }
+    res.status(200).json({ profile });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};
 
-    // Update existing profile
-    profile = await Profile.findOneAndUpdate(
-      { user: req.user.id },
-      { $set: profileFields },
+// Controller function to update a profile by ID
+const updateProfileById = async (req, res) => {
+  try {
+    const {
+      handle,
+      company,
+      website,
+      location,
+      status,
+      skills,
+      bio,
+      experience,
+    } = req.body;
+    const profileFields = {
+      handle,
+      company,
+      website,
+      location,
+      status,
+      skills: skills.split(",").map((skill) => skill.trim()),
+      bio,
+      experience,
+    };
+
+    const profile = await Profile.findByIdAndUpdate(
+      req.params.id,
+      profileFields,
       { new: true }
     );
+
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
 
     res
       .status(200)
@@ -70,8 +123,25 @@ const updateProfile = async (req, res) => {
   }
 };
 
+// Controller function to delete a profile by ID
+const deleteProfileById = async (req, res) => {
+  try {
+    const profile = await Profile.findByIdAndDelete(req.params.id);
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+    res.status(200).json({ success: true, message: "Profile deleted" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};
+
 module.exports = {
-  getAll,
-  updateProfile,
-  authenticateUser,
+  createProfile,
+  authenticateProfile,
+  getAllProfiles,
+  getProfileById,
+  updateProfileById,
+  deleteProfileById,
 };
