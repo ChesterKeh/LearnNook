@@ -7,6 +7,8 @@ import Navbar from "./components/NavBar/NavBar";
 import ProfileListPage from "./pages/ProfileListPage/ProfileListPage";
 
 import "./App.css";
+import SignUpPage from "./pages/AuthPage/SignupPage/SignUpPage";
+import LoginPage from "./pages/AuthPage/LoginPage/LoginPage";
 
 function App() {
   return (
@@ -23,8 +25,12 @@ function App() {
           element={<ProfileListPage />}
         />
         <Route
+          path="/login"
+          element={<LoginPage />}
+        />
+        <Route
           path="/signup"
-          element={<AuthPage />}
+          element={<SignUpPage />}
         />
         <Route
           path="/profile"
