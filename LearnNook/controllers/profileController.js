@@ -1,6 +1,10 @@
 const Profile = require("../models/profileModel");
 const jwt = require("jsonwebtoken");
 
+//check if token has a profile
+// if there is no profile
+// generates a profile
+
 const authenticateProfile = async (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
@@ -91,6 +95,7 @@ const updateProfileById = async (req, res) => {
       bio,
       experience,
     } = req.body;
+
     const profileFields = {
       handle,
       company,
@@ -142,3 +147,4 @@ module.exports = {
   updateProfileById,
   deleteProfileById,
 };
+
