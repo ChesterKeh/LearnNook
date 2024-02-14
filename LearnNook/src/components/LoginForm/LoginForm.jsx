@@ -17,7 +17,7 @@ export default function LoginForm({ setUser }) {
       const user = await login({ email, password });
       if (user.token) {
         console.log(user);
-        //   navigate("/account/user");
+        navigate("/list");
         setError("");
         setSuccessMessage("Login successful");
       } else {

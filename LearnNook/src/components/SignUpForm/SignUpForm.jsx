@@ -1,43 +1,51 @@
 import React, { Component } from "react";
-import { signUp } from "../../utilities/user/user-service"
 import "./SignUpForm.css";
+import { connect } from "react-redux";
+import { registerUser } from "../../actions/authActions";
+import propTypes from "prop-types";
 
 class SignUpForm extends Component {
-  state = {
-    name: "",
-    email: "",
-    password: "",
-    confirm: "",
-    error: "",
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "",
+      email: "",
+      password: "",
+      confirm: "",
+    };
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
-  handleChange = (evt) => {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
+  }
+
+  handleChange = (e) => {
     this.setState({
-      [evt.target.name]: evt.target.value,
+      [e.target.name]: e.target.value,
       error: "",
     });
   };
 
-  handleSubmit = async (e) => {
+  handleSubmit(e) {
     e.preventDefault();
-    try {
-      const user = await signUp(this.state);
-      if (user) {
-        this.props.setUser(user);
-      } else {
-        this.setState({ error: "Email already in use" });
-      }
-    } catch (e) {
-      const error = JSON.stringify(e);
-      this.setState({ error });
-      console.log(error);
-    }
-  };
+
+    const newUser = {
+      name: this.state.name,
+      email: this.state.email,
+      password: this.state.password,
+      confirm: this.state.password,
+    };
+
+    this.props.registerUser(newUser, this.props.history);
+  }
 
   render() {
-    const { error, email } = this.state;
-    const disable = this.state.password !== this.state.confirm;
-    const emailErrorClass = error ? "border-red-500" : "";
+    const { error, email, name, password, confirm } = this.state;
+    const disable =
+      password !== confirm || !name || !email || !password || !confirm;
     return (
       <>
         <div className="min-h-screen flex justify-center items-center bg-gray-100">
@@ -55,12 +63,17 @@ class SignUpForm extends Component {
                   id="name"
                   type="text"
                   name="name"
-                  value={this.state.name}
+                  value={name}
                   onChange={this.handleChange}
-                  className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500"
+                  className={`border ${
+                    !name ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500`}
                   placeholder="Your name"
                   required
                 />
+                {!name && (
+                  <p className="mt-1 text-sm text-red-500">Name is required</p>
+                )}
               </div>
               <div className="mb-4">
                 <label
@@ -75,11 +88,21 @@ class SignUpForm extends Component {
                   name="email"
                   value={email}
                   onChange={this.handleChange}
-                  className={`border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500 ${emailErrorClass}`}
+                  className={`border ${
+                    !email ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500`}
                   placeholder={error ? error : "Your email"}
                   required
                 />
+                {!email && (
+                  <p className="mt-1 text-sm text-red-500">Email is required</p>
+                )}
               </div>
+              {/* Error Message */}
+              {error && (
+                <p className="mt-2 text-center text-red-600">{error}</p>
+              )}
+
               <div className="mb-6">
                 <label
                   htmlFor="password"
@@ -91,12 +114,19 @@ class SignUpForm extends Component {
                   id="password"
                   type="password"
                   name="password"
-                  value={this.state.password}
+                  value={password}
                   onChange={this.handleChange}
-                  className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500"
+                  className={`border ${
+                    !password ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500`}
                   placeholder="Your password"
                   required
                 />
+                {!password && (
+                  <p className="mt-1 text-sm text-red-500">
+                    Password is required
+                  </p>
+                )}
               </div>
               <div className="mb-6">
                 <label
@@ -109,12 +139,19 @@ class SignUpForm extends Component {
                   id="confirm"
                   type="password"
                   name="confirm"
-                  value={this.state.confirm}
+                  value={confirm}
                   onChange={this.handleChange}
-                  className="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500"
+                  className={`border ${
+                    !confirm ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-4 py-2 w-full focus:outline-none focus:border-blue-500`}
                   placeholder="Confirm your password"
                   required
                 />
+                {!confirm && (
+                  <p className="mt-1 text-sm text-red-500">
+                    Confirmation is required
+                  </p>
+                )}
               </div>
               <div className="flex items-center justify-between">
                 <button
@@ -140,4 +177,16 @@ class SignUpForm extends Component {
   }
 }
 
-export default SignUpForm;
+SignUpForm.propTypes = {
+  registerUser: propTypes.func.isRequired,
+  auth: propTypes.object.isRequired,
+  error: propTypes.object.isRequired,
+  history: propTypes.object.isRequired, // Ensure history is passed as a prop
+};
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+  errors: state.error,
+});
+
+export default connect(mapStateToProps, { registerUser })(SignUpForm);

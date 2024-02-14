@@ -1,7 +1,7 @@
 export default function ProfileList() {
   return (
     <>
-      <h1>Hello world</h1>
+      <h1>Display all coaches</h1>
     </>
   );
 }
