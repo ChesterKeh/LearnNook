@@ -5,63 +5,83 @@ const jwt = require("jsonwebtoken");
 // if there is no profile
 // generates a profile
 
-const authenticateProfile = async (req, res, next) => {
+const createProfile = async (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.SECRET);
-    const user = decoded.user;
+    console.log("Request Body:", req.body);
 
-    const userId = user._id;
-    let profile = await Profile.findOne({ user: userId });
+    const {
+      user,
+      handle,
+      company,
+      website,
+      location,
+      status,
+      skills,
+      bio,
+      experience,
+    } = req.body;
 
-    if (!profile) {
-      const {
-        handle,
-        company,
-        website,
-        location,
-        status,
-        skills,
-        bio,
-        experience,
-      } = req.body;
-
-      const existingProfile = await Profile.findOne({ handle });
-      if (existingProfile) {
-        return res
-          .status(400)
-          .json({ error: "Handle already exists. Try another one." });
-      }
-
-      const profileFields = {
-        user: userId,
-        handle,
-        company,
-        website,
-        location,
-        status,
-        skills: skills.split(",").map((skill) => skill.trim()),
-        bio,
-        experience,
-      };
-
-      profile = new Profile(profileFields);
-      await profile.save();
+    // Check if the handle already exists
+    const existingProfile = await Profile.findOne({ handle });
+    if (existingProfile) {
+      return res
+        .status(400)
+        .json({ error: "Handle already exists. Try another one." });
     }
 
-    req.profile = profile;
-    res.status(200).json({ profile });
-    next();
+    console.log("User ID:", req.user._id);
+
+    // Create a new profile object
+    const newProfile = new Profile({
+      user: req.user._id,
+      handle,
+      company,
+      website,
+      location,
+      status,
+      skills: skills.split(",").map((skill) => skill.trim()),
+      bio,
+      experience,
+    });
+
+    console.log("New Profile:", newProfile);
+
+    // Save the new profile to the database
+    await newProfile.save();
+
+    console.log("New Profile saved:", newProfile);
+
+    // Return a success response with the newly created profile
+    res.status(201).json({ success: true, profile: newProfile });
   } catch (error) {
-    return res.status(401).json({ error: "Invalid token" });
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
   }
 };
 
 // Controller function to get all profiles
 const getAllProfiles = async (req, res) => {
   try {
-    const profiles = await Profile.find();
+    const profiles = await Profile.find().populate("user", ["name", "avatar"]);
     res.status(200).json({ profiles });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};
+
+// Controller function to get a single profile by ID
+const getProfileByHandle = async (req, res) => {
+  try {
+    const profile = await Profile.findOne({
+      handle: req.params.handle,
+    }).populate("user", ["name", "avatar"]);
+    console.log(profile);
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    res.status(200).json({ profile });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ success: false, error: "Server error" });
@@ -71,10 +91,43 @@ const getAllProfiles = async (req, res) => {
 // Controller function to get a single profile by ID
 const getProfileById = async (req, res) => {
   try {
-    const profile = await Profile.findById(req.params.id);
+    const profile = await Profile.findOneAndDelete({
+      user: req.params.user.id,
+    }).then(() => {
+      User.findOneAndDelete({ _id: req.user.id }).then(() =>
+        res.json({ sucess: true })
+      );
+    });
+    if (!profile) {
+      console.log(profile);
+      return res.status(404).json({ error: "Profile not found" });
+    }
+    res.status(200).json({ profile });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};
+
+//Controller function for experince
+
+const createExperience = async (req, res) => {
+  try {
+    const profile = await Profile.findOne({ user: req.params.user_id });
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
     }
+    const newExp = {
+      title: req.body.title,
+      company: req.body.company,
+      location: req.body.location,
+      from: req.body.from,
+      to: req.body.to,
+      current: req.body.current,
+    };
+
+    profile.experience.unshift(newExp);
+    await profile.save();
     res.status(200).json({ profile });
   } catch (error) {
     console.error("Error:", error);
@@ -129,11 +182,51 @@ const updateProfileById = async (req, res) => {
 // Controller function to delete a profile by ID
 const deleteProfileById = async (req, res) => {
   try {
-    const profile = await Profile.findByIdAndDelete(req.params.id);
+    const profileId = req.params.id;
+
+    // Find and delete the profile by its ID
+    const profile = await Profile.findByIdAndDelete(profileId);
+
     if (!profile) {
       return res.status(404).json({ error: "Profile not found" });
     }
-    res.status(200).json({ success: true, message: "Profile deleted" });
+
+    // Respond with success message
+    res.json({ success: true, message: "Profile deleted" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+};
+
+const deleteExpbyId = async (req, res) => {
+  try {
+    const experienceId = req.params.exp_id;
+
+    // Find the profile containing the experience with the given ID
+    const profile = await Profile.findOne({ "experience._id": experienceId });
+
+    if (!profile) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    // Find the index of the experience to delete
+    const removeIndex = profile.experience.findIndex(
+      (exp) => exp._id.toString() === experienceId
+    );
+
+    if (removeIndex === -1) {
+      return res.status(404).json({ error: "Experience not found" });
+    }
+
+    // Remove the experience from the profile's experience array
+    profile.experience.splice(removeIndex, 1);
+
+    // Save the profile with the updated experience list
+    await profile.save();
+
+    // Respond with success message
+    res.json({ success: true, message: "Experience deleted" });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ success: false, error: "Server error" });
@@ -141,10 +234,12 @@ const deleteProfileById = async (req, res) => {
 };
 
 module.exports = {
-  authenticateProfile,
+  createProfile,
   getAllProfiles,
   getProfileById,
   updateProfileById,
+  getProfileByHandle,
+  createExperience,
+  deleteExpbyId,
   deleteProfileById,
 };
-

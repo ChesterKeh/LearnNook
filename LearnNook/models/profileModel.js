@@ -4,7 +4,7 @@ const { Schema, model } = require("mongoose");
 const profileSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: "users",
+    ref: "User",
   },
   handle: {
     type: String,

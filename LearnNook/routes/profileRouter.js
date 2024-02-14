@@ -1,24 +1,30 @@
 const express = require("express");
 const router = express.Router();
 const profileController = require("../controllers/profileController");
+const authenticateProfile = require("../middleware/authenticateProfile");
 
-router.get("/", profileController.getAllProfiles);
+router.get("/all", profileController.getAllProfiles);
 
-router.post("/create", profileController.authenticateProfile);
+router.post("/create", authenticateProfile, profileController.createProfile);
 
-router.get("/:id", profileController.getProfileById);
+router.get("/handle/:handle", profileController.getProfileByHandle);
 
-router.put(
-  "/:id",
-  profileController.authenticateProfile,
-  profileController.updateProfileById
+router.get("/:user_id", profileController.getProfileById);
+
+router.post(
+  "/experience/:user_id",
+  authenticateProfile,
+  profileController.createExperience
 );
 
+router.put("/:id", authenticateProfile, profileController.updateProfileById);
+
 // Delete a profile by ID
+router.delete("/:id", authenticateProfile, profileController.deleteProfileById);
 router.delete(
-  "/:id",
-  profileController.authenticateProfile,
-  profileController.deleteProfileById
+  "/experience/:exp_id",
+  authenticateProfile,
+  profileController.deleteExpbyId
 );
 
 module.exports = router;
