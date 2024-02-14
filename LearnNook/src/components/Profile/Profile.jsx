@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createProfile } from "../../utilities/profile-service.js";
+import { createProfile } from "../../utilities/profile/profile-service";
 
 const CreateProfileForm = () => {
   const [formData, setFormData] = useState({
