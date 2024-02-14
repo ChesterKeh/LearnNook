@@ -1,11 +1,11 @@
 import axios from "axios";
 import { GET_ERRORS } from "./types";
 
-export const registerUser = (userData, history) => (dispatch) => {
+export const registerUser = (userData, navigate) => (dispatch) => {
   axios
-    .post("/api/users/signup", userData)
+    .post("/api/users/register", userData)
     .then((res) => {
-      history.push("/login");
+      navigate("/login");
     })
     .catch((error) => {
       if (error.response) {
