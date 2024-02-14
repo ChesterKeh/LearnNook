@@ -10,7 +10,7 @@ const Navbar = () => {
             to="/"
             className="text-white text-xl font-bold"
           >
-            Homepage
+            LearnNook
           </NavLink>
           <NavLink
             to="/list"
