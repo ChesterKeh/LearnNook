@@ -10,4 +10,35 @@ const postSchema = new Schema({
     type: String,
     require: true,
   },
+  name: {
+    type: String,
+  },
+  avatar: {
+    type: String,
+  },
+  likes: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    },
+  ],
+  comments: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+      avatar: {
+        type: String,
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
 });
+
+module.exports = model("Post", postSchema);
