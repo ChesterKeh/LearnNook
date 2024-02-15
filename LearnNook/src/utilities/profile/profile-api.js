@@ -77,15 +77,21 @@ export async function createExperience(userId, experienceData) {
     throw new Error("Failed to add experience");
   }
 }
-
 export async function updateProfile(profileId, profileData) {
-  const res = await fetch(BASE_URL + `/${profileId}`, {
+  const url = BASE_URL + `/${profileId}`;
+  console.log(profileId);
+  console.log("Request URL:", url);
+  console.log("Request Body:", profileData);
+
+  const res = await fetch(url, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(profileData),
   });
+
   if (res.ok) {
     const data = await res.json();
+    console.log("Response Data:", data);
     return data.profile;
   } else {
     throw new Error("Failed to update profile");

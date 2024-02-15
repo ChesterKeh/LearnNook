@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import MyProfile from "../../components/Profile/MyProfile";
 import CreateProfileForm from "../../components/Profile/CreateProfileForm";
 import { getProfileByToken } from "../../utilities/profile/profile-service";
+import ProfileActions from "../../components/Profile/ProfileActions";
 
 export default function ProfilePage() {
   const [showCreateProfileForm, setShowCreateProfileForm] = useState(false);
@@ -47,6 +48,7 @@ export default function ProfilePage() {
             Create Profile
           </button>
         )}
+        <ProfileActions />
         {!profile && !showCreateProfileForm && (
           <div>
             No profile found.{" "}

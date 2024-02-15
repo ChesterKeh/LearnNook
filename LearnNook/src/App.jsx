@@ -12,6 +12,8 @@ import SignUpPage from "./pages/AuthPage/SignupPage/SignUpPage";
 import LoginPage from "./pages/AuthPage/LoginPage/LoginPage";
 import Footer from "./components/Footer/Footer";
 import Dashboard from "./pages/dashboard/dashboard";
+import PostsPage from "./pages/PostPage/PostPage";
+import EditProfile from "./components/Profile/EditProfile";
 
 function App() {
   return (
@@ -42,6 +44,14 @@ function App() {
         <Route
           path="/dashboard"
           element={<Dashboard />}
+        />
+        <Route
+          path="/post"
+          element={<PostsPage />}
+        />
+        <Route
+          path="/edit-profile"
+          element={<EditProfile />}
         />
       </Routes>
       <Footer />

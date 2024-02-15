@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function SearchBar() {
+export default function SearchBar({ onSearch }) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleInputChange = (event) => {
@@ -9,8 +9,7 @@ export default function SearchBar() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Do something with the searchQuery, like sending it to a backend API
-    console.log("Search query:", searchQuery);
+    onSearch(searchQuery);
   };
 
   return (
@@ -23,7 +22,8 @@ export default function SearchBar() {
         placeholder="Search..."
         value={searchQuery}
         onChange={handleInputChange}
-        className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200 flex-grow"
+        className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-200 flex-grow text-black"
+        // Use "text-black" class to set the text color to black
       />
       <button
         type="submit"

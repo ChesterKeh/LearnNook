@@ -132,6 +132,7 @@ const createExperience = async (req, res) => {
 const updateProfileById = async (req, res) => {
   try {
     const {
+      
       handle,
       company,
       website,
