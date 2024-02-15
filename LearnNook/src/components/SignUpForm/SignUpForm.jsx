@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { registerUser } from "../../actions/authActions";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const SignUpForm = ({ registerUser, errors }) => {
   const navigate = useNavigate();
@@ -151,7 +152,7 @@ const SignUpForm = ({ registerUser, errors }) => {
               Sign Up
             </button>
             <a
-              href="#"
+              href="/login"
               className="text-gray-600 text-sm"
             >
               Already have an account? Sign In

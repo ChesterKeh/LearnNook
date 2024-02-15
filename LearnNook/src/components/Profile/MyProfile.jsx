@@ -27,7 +27,7 @@ const MyProfile = () => {
   }, []);
 
   if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) return <div>No profile found</div>;
   if (!profile) return <div>No profile found.</div>;
 
   return (

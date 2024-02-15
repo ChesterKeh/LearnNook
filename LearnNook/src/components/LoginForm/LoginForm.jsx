@@ -17,9 +17,10 @@ export default function LoginForm({ setUser }) {
       const user = await login({ email, password });
       if (user.token) {
         console.log(user);
-        navigate("/list");
+        navigate("/profile");
         setError("");
         setSuccessMessage("Login successful");
+        window.location.reload();
       } else {
         setError("Invalid email or password");
         setSuccessMessage("");
@@ -99,7 +100,7 @@ export default function LoginForm({ setUser }) {
 
             <div className="text-sm">
               <a
-                href="#"
+                href="/signup"
                 className="font-medium text-indigo-600 hover:text-indigo-500"
               >
                 Forgot your password?

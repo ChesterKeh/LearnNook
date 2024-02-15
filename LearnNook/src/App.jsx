@@ -11,6 +11,7 @@ import "./App.css";
 import SignUpPage from "./pages/AuthPage/SignupPage/SignUpPage";
 import LoginPage from "./pages/AuthPage/LoginPage/LoginPage";
 import Footer from "./components/Footer/Footer";
+import Dashboard from "./pages/dashboard/dashboard";
 
 function App() {
   return (
@@ -37,6 +38,10 @@ function App() {
         <Route
           path="/login"
           element={<LoginPage />}
+        />
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
         />
       </Routes>
       <Footer />

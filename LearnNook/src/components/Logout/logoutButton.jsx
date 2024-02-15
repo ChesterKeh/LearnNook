@@ -11,6 +11,7 @@ const LogoutButton = () => {
     logout();
     dispatch({ type: "LOGOUT" });
     navigate("/");
+    window.location.reload();
   };
 
   return (

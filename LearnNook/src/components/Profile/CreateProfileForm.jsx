@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { createProfile } from "../../utilities/profile/profile-service";
+import { useNavigate } from "react-router-dom";
 
 const CreateProfileForm = () => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ const CreateProfileForm = () => {
     experience: [],
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -21,7 +24,10 @@ const CreateProfileForm = () => {
     e.preventDefault();
     try {
       const newProfile = await createProfile(formData);
+
       console.log("New Profile:", newProfile);
+      navigate("/profile");
+      window.location.reload();
       // Handle successful profile creation, e.g., show success message or redirect
     } catch (error) {
       console.error("Error creating profile:", error.message);
