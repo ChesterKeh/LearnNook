@@ -43,12 +43,22 @@ export async function getProfileByHandle(handle) {
   }
 }
 
-export async function getProfileById(userId) {
-  const res = await fetch(BASE_URL + `/${userId}`);
-  if (res.ok) {
-    const data = await res.json();
-    return data.profile;
-  } else {
+export async function getProfileById(token) {
+  try {
+    // Decode the token to extract user ID
+    const decodedToken = jwt.decode(token);
+    console.log("Decoded Token:", decodedToken);
+
+    // Extract user ID from the decoded token
+    const userId = decodedToken ? decodedToken.user_id : null;
+    console.log("User ID from Decoded Token:", userId);
+
+    // Fetch profile using the user ID
+    const userProfile = await fetchProfileById(userId);
+
+    return userProfile;
+  } catch (error) {
+    console.error("Error fetching profile:", error);
     throw new Error("Failed to fetch profile");
   }
 }

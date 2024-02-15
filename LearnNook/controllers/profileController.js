@@ -91,20 +91,23 @@ const getProfileByHandle = async (req, res) => {
 // Controller function to get a single profile by ID
 const getProfileById = async (req, res) => {
   try {
-    const profile = await Profile.findOneAndDelete({
-      user: req.params.user.id,
-    }).then(() => {
-      User.findOneAndDelete({ _id: req.user.id }).then(() =>
-        res.json({ sucess: true })
-      );
-    });
+    console.log("Fetching profile by ID:", req.params.id);
+
+    const profile = await Profile.findById(req.params.id)
+      .populate("user", "_id") // Populate the user field and select only the _id
+      .exec();
+
+    console.log("Fetched profile:", profile);
+
     if (!profile) {
-      console.log(profile);
+      console.log("Profile not found");
       return res.status(404).json({ error: "Profile not found" });
     }
+
+    console.log("Sending profile response:", profile);
     res.status(200).json({ profile });
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error fetching profile:", error);
     res.status(500).json({ success: false, error: "Server error" });
   }
 };

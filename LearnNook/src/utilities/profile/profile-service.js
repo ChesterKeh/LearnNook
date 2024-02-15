@@ -11,10 +11,14 @@ export async function getProfileByHandle(handle) {
   return profileAPI.getProfileByHandle(handle);
 }
 
-export async function getProfileById(userId) {
-  return profileAPI.getProfileById(userId);
+export async function getProfileById(userId, currentUserId) {
+  const userProfile = await profileAPI.getProfileById(userId);
+  if (userProfile.user._id === currentUserId) {
+    return userProfile;
+  } else {
+    throw new Error("Unauthorized access to profile");
+  }
 }
-
 export async function createExperience(userId, experienceData) {
   return profileAPI.createExperience(userId, experienceData);
 }
