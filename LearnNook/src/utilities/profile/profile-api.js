@@ -43,25 +43,26 @@ export async function getProfileByHandle(handle) {
   }
 }
 
-export async function getProfileById(token) {
+export const getProfileByToken = async (token) => {
   try {
-    // Decode the token to extract user ID
-    const decodedToken = jwt.decode(token);
-    console.log("Decoded Token:", decodedToken);
-
-    // Extract user ID from the decoded token
-    const userId = decodedToken ? decodedToken.user_id : null;
-    console.log("User ID from Decoded Token:", userId);
-
-    // Fetch profile using the user ID
-    const userProfile = await fetchProfileById(userId);
-
-    return userProfile;
+    const response = await fetch(`/api/profile`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch profile. Please try again later.");
+    }
+    const data = await response.json();
+    console.log("Response from backend:", data); // Log the response data
+    return data;
   } catch (error) {
     console.error("Error fetching profile:", error);
-    throw new Error("Failed to fetch profile");
+    throw error;
   }
-}
+};
 
 export async function createExperience(userId, experienceData) {
   const res = await fetch(BASE_URL + `/experience/${userId}`, {

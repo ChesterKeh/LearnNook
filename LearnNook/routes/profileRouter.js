@@ -9,7 +9,7 @@ router.post("/create", authenticateProfile, profileController.createProfile);
 
 router.get("/handle/:handle", profileController.getProfileByHandle);
 
-router.get("/:id", profileController.getProfileById);
+router.get("/", authenticateProfile, profileController.getProfileById);
 
 router.post(
   "/experience/:user_id",
