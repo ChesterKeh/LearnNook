@@ -1,115 +1,80 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   getAllPostsService,
   likePostService,
   dislikePostService,
-  deletePostService,
-  addCommentService,
 } from "../../utilities/post/post-service";
 
-const PostsList = ({ authToken }) => {
+import { FaHeart, FaRegHeart } from "react-icons/fa"; // Import heart icons
+
+function PostList() {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      setLoading(true);
       try {
-        const fetchedPosts = await getAllPostsService();
-        setPosts(fetchedPosts);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-        setLoading(false);
+        const data = await getAllPostsService();
+        setPosts(data.tasks); // Assume tasks is your posts array
+      } catch (err) {
+        console.error("Error fetching posts:", err.message);
       }
     };
 
     fetchPosts();
   }, []);
 
-  const handleLike = async (postId) => {
+  const toggleLike = async (postId, isLiked) => {
     try {
-      await likePostService(postId, authToken);
-      fetchPosts();
+      if (isLiked) {
+        await dislikePostService(postId); // Assume this updates the backend
+      } else {
+        await likePostService(postId); // Assume this updates the backend
+      }
+      // Optimistically update the UI
+      const updatedPosts = posts.map((post) =>
+        post._id === postId
+          ? {
+              ...post,
+              isLiked: !isLiked,
+              likesCount: isLiked ? post.likesCount - 1 : post.likesCount + 1,
+            }
+          : post
+      );
+      setPosts(updatedPosts);
     } catch (error) {
-      console.error("Failed to like the post:", error);
+      console.error("Error toggling like:", error.message);
     }
   };
-
-  const handleDislike = async (postId) => {
-    try {
-      await dislikePostService(postId, authToken);
-      fetchPosts();
-    } catch (error) {
-      console.error("Failed to dislike the post:", error);
-    }
-  };
-
-  const handleDelete = async (postId) => {
-    try {
-      await deletePostService(postId, authToken);
-      fetchPosts();
-    } catch (error) {
-      console.error("Failed to delete the post:", error);
-    }
-  };
-
-  const handleComment = async (postId, commentText) => {
-    try {
-      await addCommentService(postId, commentText, authToken);
-      fetchPosts();
-    } catch (error) {
-      console.error("Failed to add comment:", error);
-    }
-  };
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
-    <div>
-      {posts.map((post) => (
-        <div
-          key={post._id}
-          className="post"
-        >
-          <p>{post.text}</p>
-          <div className="actions">
-            <button onClick={() => handleLike(post._id)}>Like</button>
-            <button onClick={() => handleDislike(post._id)}>Dislike</button>
-            <button onClick={() => handleDelete(post._id)}>Delete</button>
-          </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const commentText = e.target.elements.comment.value;
-              handleComment(post._id, commentText);
-              e.target.elements.comment.value = ""; // Clear input after submission
-            }}
-          >
-            <input
-              type="text"
-              name="comment"
-              placeholder="Write a comment..."
-            />
-            <button type="submit">Submit Comment</button>
-          </form>
-          <div className="comments">
-            {post.comments?.map((comment) => (
-              <div
-                key={comment._id}
-                className="comment"
-              >
-                <p>{comment.text}</p>
-                {/* Add any additional comment actions here */}
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center mb-6">Posts</h1>
+      {posts.length > 0 ? (
+        <div className="space-y-4">
+          {posts.map((post) => (
+            <div
+              key={post._id}
+              className="bg-white shadow-lg rounded-lg p-6 flex flex-col"
+            >
+              <h2 className="text-xl font-semibold">{post.name}</h2>
+              <p className="text-gray-700 mt-2">{post.text}</p>
+              <div className="mt-4 flex items-center">
+                <button
+                  className="text-red-500"
+                  onClick={() => toggleLike(post._id, post.isLiked)}
+                >
+                  {post.isLiked ? <FaHeart /> : <FaRegHeart />}
+                </button>
+                <span className="ml-2">{post.likesCount}</span>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      ))}
+      ) : (
+        <p className="text-center text-gray-500">No posts found</p>
+      )}
     </div>
   );
-};
+}
 
-export default PostsList;
+export default PostList;

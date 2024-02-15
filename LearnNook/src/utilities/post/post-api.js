@@ -1,10 +1,9 @@
 const BASE_URL = "/api/post"; // Adjusted to your provided BASE_URL
 
 // Fetch all posts
-export const getAllPosts = async (authToken) => {
-  const response = await fetch(`${BASE_URL}/getall`, {
-    headers: { Authorization: `Bearer ${authToken}` },
-  });
+// Adjusted fetch call without authToken
+export const getAllPosts = async () => {
+  const response = await fetch(`${BASE_URL}/getall`);
   if (!response.ok) throw new Error("Network response was not ok.");
   return response.json();
 };
