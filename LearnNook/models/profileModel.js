@@ -24,7 +24,7 @@ const profileSchema = new Schema({
     type: String,
     required: true,
   },
-  skills: {
+  sport: {
     type: [String],
     require: true,
   },

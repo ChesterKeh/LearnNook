@@ -16,7 +16,7 @@ const createProfile = async (req, res, next) => {
       website,
       location,
       status,
-      skills,
+      sport,
       bio,
       experience,
     } = req.body;
@@ -39,7 +39,7 @@ const createProfile = async (req, res, next) => {
       website,
       location,
       status,
-      skills: skills.split(",").map((skill) => skill.trim()),
+      sport: sport.split(",").map((skill) => skill.trim()),
       bio,
       experience,
     });
@@ -144,7 +144,7 @@ const updateProfileById = async (req, res) => {
       website,
       location,
       status,
-      skills,
+      sport,
       bio,
       experience,
     } = req.body;
@@ -155,7 +155,7 @@ const updateProfileById = async (req, res) => {
       website,
       location,
       status,
-      skills: skills.split(",").map((skill) => skill.trim()),
+      sport: sport.split(",").map((skill) => skill.trim()),
       bio,
       experience,
     };

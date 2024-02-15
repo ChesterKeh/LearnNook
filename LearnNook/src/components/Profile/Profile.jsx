@@ -3,29 +3,30 @@ import { createProfile } from "../../utilities/profile/profile-service";
 
 const CreateProfileForm = () => {
   const [formData, setFormData] = useState({
-    handle: "",
-    company: "",
-    website: "",
-    location: "",
-    status: "",
-    skills: "",
-    bio: "",
-    experience: "",
+    handle: "Test",
+    company: "Tempo",
+    website: "wingstop.coms",
+    location: "dragon",
+    status: "Flame",
+    sport: "help",
+    bio: "testing",
+    experience: [],
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    createProfile(formData)
-      .then((response) => {
-        console.log("Profile created:", response);
-      })
-      .catch((error) => {
-        console.error("Error creating profile:", error);
-      });
+    try {
+      const newProfile = await createProfile(formData);
+      console.log("New Profile:", newProfile);
+      // Handle successful profile creation, e.g., show success message or redirect
+    } catch (error) {
+      console.error("Error creating profile:", error.message);
+      // Handle error, e.g., show error message to user
+    }
   };
 
   return (
@@ -84,11 +85,11 @@ const CreateProfileForm = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block mb-1 font-semibold">Skills:</label>
+          <label className="block mb-1 font-semibold">Sport:</label>
           <input
             type="text"
-            name="skills"
-            value={formData.skills}
+            name="sport"
+            value={formData.sport}
             onChange={handleChange}
             className="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500"
           />
