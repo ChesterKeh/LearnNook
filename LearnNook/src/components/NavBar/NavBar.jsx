@@ -56,6 +56,12 @@ const Navbar = () => {
           >
             Coach List
           </NavLink>
+          <NavLink
+            to="/post"
+            className="text-white text-xl font-bold"
+          >
+            The Feed
+          </NavLink>
         </div>
         <div className="flex space-x-4">
           {isLoggedIn ? logDisplay : publicDisplay}
