@@ -26,11 +26,10 @@ function PostList() {
   const toggleLike = async (postId, isLiked) => {
     try {
       if (isLiked) {
-        await dislikePostService(postId); // Assume this updates the backend
+        await dislikePostService(postId);
       } else {
-        await likePostService(postId); // Assume this updates the backend
+        await likePostService(postId);
       }
-      // Optimistically update the UI
       const updatedPosts = posts.map((post) =>
         post._id === postId
           ? {
@@ -65,7 +64,6 @@ function PostList() {
                 >
                   {post.isLiked ? <FaHeart /> : <FaRegHeart />}
                 </button>
-                <span className="ml-2">{post.likesCount}</span>
               </div>
             </div>
           ))}

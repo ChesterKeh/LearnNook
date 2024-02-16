@@ -15,10 +15,8 @@ const CreatePost = ({ authToken }) => {
         }
       );
       setPostText("");
-      // Optionally, add a success message or refresh the posts
     } catch (error) {
       console.error(error);
-      // Optionally, add an error message for the user
     }
   };
 
