@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 
 const CreateProfileForm = () => {
   const [formData, setFormData] = useState({
-    handle: "Test",
-    company: "Tempo",
-    website: "wingstop.coms",
-    location: "dragon",
-    status: "Flame",
-    sport: "help",
-    bio: "testing",
+    handle: "",
+    company: "",
+    website: "",
+    location: "",
+    status: "",
+    sport: "",
+    bio: "",
     experience: [],
   });
 

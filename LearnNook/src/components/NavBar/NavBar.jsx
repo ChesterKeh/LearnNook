@@ -31,6 +31,13 @@ const Navbar = () => {
   const logDisplay = (
     <>
       <NavLink
+        to="/post"
+        className="text-white hover:text-gray-300 transition duration-300"
+      >
+        The Feed
+      </NavLink>
+
+      <NavLink
         to="/profile"
         className="text-white hover:text-gray-300 transition duration-300"
       >
@@ -55,12 +62,6 @@ const Navbar = () => {
             className="text-white text-xl font-bold"
           >
             Coach List
-          </NavLink>
-          <NavLink
-            to="/post"
-            className="text-white text-xl font-bold"
-          >
-            The Feed
           </NavLink>
         </div>
         <div className="flex space-x-4">
